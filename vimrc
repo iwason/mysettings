@@ -22,7 +22,7 @@ set hlsearch " 検索結果をハイライト
 nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch!<CR>
 set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
 set number " 行番号を表示
-set cursorline " カーソルラインをハイライト
+" set cursorline " カーソルラインをハイライト
 
 " 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
 nnoremap j gj
@@ -55,26 +55,44 @@ endif
 if &compatible
   set nocompatible
 endif
+
+let s:dein_dir = expand('~/.vim/bundle/')
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 set runtimepath+=~/.vim/bundle/repos/github.com/Shougo/dein.vim/
 
-if dein#load_state('~/.vim/bundle/')
-    call dein#begin('~/.vim/bundle/')
-    call dein#add('~/.vim/bundle/')
-    call dein#add('Shougo/neocomplete.vim')
-    call dein#add('Shougo/dein.vim')
-    call dein#add('Shougo/vimproc.vim', {'build': 'make'})
-    call dein#add('Shougo/neocomplete.vim')
-    call dein#add('Shougo/neomru.vim')
-    call dein#add('Shougo/neosnippet')
+if dein#load_state(s:dein_dir)
+    call dein#begin(s:dein_dir)
+
+    " プラグインリストを収めた TOML ファイル
+    " 予め TOML ファイル（後述）を用意しておく
+    let g:rc_dir    = expand('~/.vim/rc')
+    let s:toml      = g:rc_dir . '/dein.toml'
+    let s:lazy_toml = g:rc_dir . '/dein_lazy.toml'
+
+    " TOML を読み込み、キャッシュしておく
+    call dein#load_toml(s:toml,      {'lazy': 0})
+    call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
     call dein#end()
     call dein#save_state()
 endif
 
+if dein#check_install()
+    call dein#install()
+endif
 
 filetype plugin indent on
 syntax enable
 
-if dein#check_install()
-    call dein#install()
-endif
+colorscheme molokai " カラースキームにmolokaiを設定する
+
+"----------------------------------------------------------
+" ステータスラインの設定
+"----------------------------------------------------------
+set laststatus=2 " ステータスラインを常に表示
+set showmode " 現在のモードを表示
+set showcmd " 打ったコマンドをステータスラインの下に表示
+set ruler " ステータスラインの右側にカーソルの現在位置を表示する
+
+
+
